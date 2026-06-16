@@ -222,23 +222,48 @@ const CHARS={
   formula:{base:500,top:4000,type:'sawtooth',q:13},
 };
 
+let currentChar=null;
+
 function playSound(s){
-  stopAudio();
   const c=getCtx(),t=c.currentTime;
   const ch=CHARS[s.char];
   const r=Math.max(.04,speed/160);
   const f=ch.base+(ch.top-ch.base)*r;
+
+  // 같은 사운드면 주파수만 부드럽게 업데이트 (끊김 없음)
+  if(currentChar===s.char && oscNodes.length>0){
+    [1,2.01,.5].forEach((fm,i)=>{
+      if(oscNodes[i]) oscNodes[i].frequency.linearRampToValueAtTime(f*fm,t+0.4);
+    });
+    return;
+  }
+
+  // 다른 사운드로 전환: 페이드아웃 후 새로 시작
+  if(gainMaster){
+    try{gainMaster.gain.linearRampToValueAtTime(0,t+0.15);}catch(e){}
+    const old=oscNodes.slice();
+    setTimeout(()=>old.forEach(n=>{try{n.stop(0)}catch(e){}}),250);
+    oscNodes=[];
+  }
+
+  currentChar=s.char;
   gainMaster=c.createGain();
-  gainMaster.gain.setValueAtTime(volume*.18,t);
+  gainMaster.gain.setValueAtTime(0,t);
+  gainMaster.gain.linearRampToValueAtTime(volume*.18,t+.25);
   gainMaster.connect(c.destination);
   [[ch.type,1,.85],['sine',2.01,.35],['sine',.5,.2]].forEach(([tp,fm,gv])=>{
     const o=c.createOscillator(),g=c.createGain();
     o.type=(['sawtooth','triangle','sine','square'].includes(tp))?tp:'sine';
     o.frequency.setValueAtTime(f*fm,t);
-    g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(gv,t+.3);
+    g.gain.setValueAtTime(gv,t);
     o.connect(g);g.connect(gainMaster);o.start(t);oscNodes.push(o);
   });
+}
+function stopAudio(){
+  if(gainMaster){try{gainMaster.gain.linearRampToValueAtTime(0,getCtx().currentTime+.15);}catch(e){}}
+  const old=oscNodes.slice();
+  setTimeout(()=>old.forEach(n=>{try{n.stop(0)}catch(e){}}),250);
+  oscNodes=[];gainMaster=null;currentChar=null;
 }
 function updateVol(){if(gainMaster){try{gainMaster.gain.setValueAtTime(volume*.18,getCtx().currentTime)}catch(e){}}}
 
