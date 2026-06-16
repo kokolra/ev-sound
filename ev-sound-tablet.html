@@ -122,7 +122,7 @@ input[type=range].vol::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
 <!-- 설치 안내 배너 -->
 <div id="installBanner">
-  📂 이 파일을 태블릿에 저장 후 브라우저로 직접 열면 GPS가 정상 작동합니다
+  ⚡ GPS 사용하려면: Android → Chrome으로 직접 열기 | iOS → 설정→Safari/Chrome→위치 허용 | ⚠️ file:// 주소에서는 GPS 차단됨
   <button onclick="document.getElementById('installBanner').style.display='none'">닫기</button>
 </div>
 
@@ -155,8 +155,12 @@ input[type=range].vol::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
     </button>
     <!-- GPS 권한 거부 시 안내 -->
     <div class="perm-guide" id="permGuide">
-      ⚠️ GPS 권한이 거부됐어요.<br>
-      브라우저 주소창 왼쪽 🔒 아이콘 → 위치 → 허용 후 새로고침하세요.
+      ⚠️ GPS 권한이 거부됐어요. 아래 방법으로 허용해 주세요:<br><br>
+      📱 <b>Android Chrome</b> — 주소창 왼쪽 ℹ️ 또는 🔒 아이콘 탭 → <b>위치</b> → 허용 → 새로고침<br>
+      🍎 <b>iPad Safari</b> — 설정 앱 → Safari → 위치 → 허용 → 새로고침<br>
+      🍎 <b>iPad Chrome</b> — 설정 앱 → Chrome → 위치 → 허용 → 새로고침<br><br>
+      ⚡ <b>file://로 열면 GPS가 차단됩니다!</b><br>
+      이 파일을 웹서버에서 열거나, Android는 Chrome으로 직접 열어야 GPS가 작동해요.
     </div>
   </div>
 </div>
